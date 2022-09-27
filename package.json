@@ -20,6 +20,7 @@
   "dependencies": {
     "@material-tailwind/html": "^1.2.1",
     "daisyui": "^2.31.0",
+    "sbd": "^1.0.19",
     "solid-js": "^1.5.1"
   }
 }
