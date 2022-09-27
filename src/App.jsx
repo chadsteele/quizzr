@@ -4,6 +4,9 @@ import { createSignal, Show, For } from "solid-js"
 import tokenizer from "sbd"
 import lorem from "./loremipsum"
 
+document.title = "qzi.cool"
+
+
 function App () {
   const [text, setText] = createSignal('')
   const [list, setList] = createSignal([])
@@ -15,18 +18,23 @@ function App () {
     var list = tokenizer.sentences(text())
 
     list = list.map(item => {
+      // check for answer
       let ans = false
-      // prefer keywords
-      for (const keyword of keywords) {
-        if (item.includes(keyword)) {
-          ans = keyword
-          break
+      if (item.includes('__')) {
+        ans = item.split('__')[1]
+      } else {
+        // prefer keywords
+        for (const keyword of keywords) {
+          if (item.includes(keyword)) {
+            ans = keyword
+            break
+          }
         }
-      }
-      if (!ans) { // default to the longest word in the sentence
-        const words = item.match(/\w+/g).sort((a, b) => { return b.length - a.length })
-        ans = words[0]
-        keywords.add(ans)
+        if (!ans) { // default to the longest word in the sentence
+          const words = item.match(/\w+/g).sort((a, b) => { return b.length - a.length })
+          ans = words[0]
+          keywords.add(ans)
+        }
       }
       return {
         text: item,
@@ -54,17 +62,22 @@ function App () {
 
   return (
     <div class="container mx-auto m-5 prose" data-theme="light">
-      <h1 ><img src="./src/assets/logo.png" style={{ height: '2rem', display: 'inline' }} /> quizzr</h1>
+
+      <h1><img src="./src/assets/logo.png" style={{ height: '2rem', display: 'inline' }} /> {document.title}</h1>
+
       <textarea id="textarea" value={text()}
         class="textarea-bordered textarea min-w-full"
         placeholder="Cut'n Paste your document here"></textarea>
-      <For each={list()}>{(item) => {
-        return <>
-          <li>{formatQA(item)}</li>
-        </>
-      }}
-      </For>
-      <a class="btn btn-primary" onClick={parse}>Go</a>
+      <a class="btn btn-primary" onClick={parse}>Parse</a>
+      <div >
+        <For each={list()}>{(item) => {
+          return <div style={"margin-top: 3rem"} >
+            {formatQA(item)}<br />
+          </div>
+        }}
+        </For>
+      </div >
+
     </div >
   )
 }
